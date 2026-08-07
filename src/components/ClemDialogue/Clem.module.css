@@ -1,0 +1,248 @@
+/*
+ * Clem's animation rig. Every looping animation is switched off by either the
+ * `.still` class (JS-detected reduced motion) or the media query at the bottom
+ * (which holds before hydration).
+ */
+
+.clem {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-origin: 50% 100%;
+  transition: transform 620ms cubic-bezier(0.34, 1.32, 0.5, 1);
+}
+
+/* The lean-out. Origin at the bottom so he pivots from behind the panel. */
+.peeking {
+  transform: translateX(14%) rotate(9deg);
+}
+
+/* ---------- shared paint ---------- */
+
+.body {
+  fill: var(--clem-body, #ffd23f);
+  stroke: var(--clem-ink, #16121f);
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+
+.fin {
+  fill: var(--clem-body-shade, #f0a81e);
+  stroke: var(--clem-ink, #16121f);
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+
+.tentacle {
+  fill: var(--clem-body-shade, #f0a81e);
+  stroke: var(--clem-ink, #16121f);
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+
+.gloss {
+  fill: #fff;
+  opacity: 0.34;
+}
+
+.sclera {
+  fill: #fffdf5;
+  stroke: var(--clem-ink, #16121f);
+  stroke-width: 4;
+}
+
+.pupil {
+  fill: var(--clem-ink, #16121f);
+}
+
+.glint {
+  fill: #fff;
+}
+
+.brow {
+  fill: none;
+  stroke: var(--clem-ink, #16121f);
+  stroke-width: 7.5;
+  stroke-linecap: round;
+}
+
+.mouth {
+  fill: none;
+  stroke: var(--clem-ink, #16121f);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mouth[data-filled='true'] {
+  fill: var(--clem-ink, #16121f);
+  stroke-width: 4;
+}
+
+/* ---------- idle bob ---------- */
+
+.bob {
+  animation: clemBob 3.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+@keyframes clemBob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(-1.2deg);
+  }
+}
+
+/* Mantle squashes a beat behind the bob so he feels soft rather than rigid. */
+.mantle {
+  animation: clemSquash 3.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+@keyframes clemSquash {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  45% {
+    transform: scale(0.985, 1.02);
+  }
+  70% {
+    transform: scale(1.015, 0.985);
+  }
+}
+
+/* ---------- tentacle sway ---------- */
+
+.tentacle {
+  transform-box: view-box;
+  animation: clemSway 2.6s ease-in-out infinite;
+}
+
+.t1 {
+  transform-origin: 43px 118px;
+  animation-delay: -0.1s;
+}
+.t2 {
+  transform-origin: 65px 124px;
+  animation-delay: -0.7s;
+}
+.t3 {
+  transform-origin: 95px 124px;
+  animation-delay: -1.3s;
+}
+.t4 {
+  transform-origin: 117px 118px;
+  animation-delay: -1.9s;
+}
+
+@keyframes clemSway {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+/* ---------- blinking ---------- */
+
+.eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: clemBlink 5.4s ease-in-out infinite;
+}
+
+/* Desyncing the second eye by a few ms keeps it from looking mechanical. */
+.eyeRight {
+  animation-duration: 5.55s;
+  animation-delay: -0.04s;
+}
+
+@keyframes clemBlink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95.5% {
+    transform: scaleY(0.06);
+  }
+}
+
+/* ---------- brows ---------- */
+
+.brows {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  transition: transform 260ms cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+
+/* Brows fly up as he leans out — the "raised eyebrows" beat. */
+.peeking .brows {
+  transform: translateY(-5px);
+}
+
+.peeking .eye {
+  animation: none;
+  transform: scaleY(1.08);
+}
+
+/* ---------- talking ---------- */
+
+.talking .mouth {
+  animation: clemTalk 260ms steps(1, end) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes clemTalk {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.45) translateY(2px);
+  }
+}
+
+.talking .brows {
+  animation: clemBrowChatter 520ms ease-in-out infinite;
+}
+
+@keyframes clemBrowChatter {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1.5px);
+  }
+}
+
+/* ---------- reduced motion ---------- */
+
+.still,
+.still * {
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clem,
+  .clem * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .peeking {
+    transform: none;
+  }
+}

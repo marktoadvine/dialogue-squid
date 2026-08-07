@@ -1,0 +1,366 @@
+/*
+ * Every colour, size and timing lives on .root as a custom property, so a
+ * consuming site can retheme Clem from its own stylesheet without touching
+ * this file.
+ */
+
+.root {
+  --clem-body: #ffd23f;
+  --clem-body-shade: #f0a81e;
+  --clem-ink: #16121f;
+  --clem-accent: #ffd23f;
+  --clem-text: #ffffff;
+  --clem-panel: rgb(10 10 12 / 0.9);
+  --clem-panel-blur: 3px;
+  --clem-font: 'Slackey', ui-rounded, 'Segoe UI Rounded', 'Trebuchet MS', system-ui, sans-serif;
+  --clem-z: 9999;
+  --clem-offset: clamp(0.75rem, 3vw, 2rem);
+  --clem-size: 182px;
+  /* How far Clem's bottom edge sits below the panel's top edge. The smaller
+     this is, the more of him clears the slab. Tuned so the cut lands just
+     above his tentacles — clipped mid-tentacle they read as a barcode. */
+  --clem-overlap: 70px;
+
+  position: fixed;
+  z-index: var(--clem-z);
+  bottom: var(--clem-offset);
+  left: var(--clem-offset);
+  right: var(--clem-offset);
+  display: flex;
+  /* The wrapper spans the viewport width, so it must not eat clicks. */
+  pointer-events: none;
+  font-family: var(--clem-font);
+}
+
+.root[data-side='right'] {
+  justify-content: flex-end;
+}
+
+.stage {
+  position: relative;
+  pointer-events: auto;
+  width: min(100%, 33rem);
+  /* The tilt lives here so Clem leans with the panel instead of against it. */
+  transform: rotate(-0.6deg);
+  animation: clemStageIn 620ms cubic-bezier(0.22, 1.35, 0.36, 1) both;
+}
+
+/* ---------- mascot ---------- */
+
+.mascot {
+  position: absolute;
+  bottom: calc(100% - var(--clem-overlap));
+  left: 14px;
+  width: calc(var(--clem-size) * 0.842);
+  height: var(--clem-size);
+  z-index: 0;
+  pointer-events: none;
+  /* Everything below the panel's top edge is cut away. Without this his
+     tentacles ghost through the 90%-opaque slab and read as a smudge. The
+     side insets are negative so the ink splat can still overflow sideways. */
+  clip-path: inset(-30% -30% var(--clem-overlap) -30%);
+}
+
+.mascotInner {
+  position: absolute;
+  inset: 0;
+  animation: clemPopIn 680ms cubic-bezier(0.2, 1.5, 0.4, 1) both;
+  animation-delay: 90ms;
+}
+
+.root[data-side='right'] .mascot {
+  left: auto;
+  right: 14px;
+}
+
+.splat {
+  position: absolute;
+  left: -14%;
+  top: -10%;
+  width: 128%;
+  height: 118%;
+  z-index: -1;
+  fill: var(--clem-body);
+  animation: clemSplat 720ms ease-out both;
+}
+
+/* ---------- panel ---------- */
+
+.panel {
+  position: relative;
+  z-index: 1;
+  padding: 1.05rem 3.4rem 1.3rem 1.4rem;
+  border: 3px solid var(--clem-ink);
+  border-radius: 24px 24px 24px 8px;
+  background: var(--clem-panel);
+  -webkit-backdrop-filter: blur(var(--clem-panel-blur));
+  backdrop-filter: blur(var(--clem-panel-blur));
+  box-shadow: 10px 10px 0 rgb(22 18 31 / 0.5);
+  cursor: pointer;
+  user-select: none;
+}
+
+.speckles {
+  position: absolute;
+  top: -20px;
+  right: -6px;
+  width: 62px;
+  height: 40px;
+  fill: var(--clem-accent);
+  pointer-events: none;
+}
+
+/* ---------- name ---------- */
+
+.name {
+  display: inline-block;
+  margin: 0 0 0.5rem;
+  padding-bottom: 5px;
+  border-bottom: 3px solid var(--clem-accent);
+  color: var(--clem-accent);
+  font-size: 0.82rem;
+  line-height: 1;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* ---------- message ---------- */
+
+.text {
+  margin: 0;
+  max-width: 46ch;
+  /* Two lines are reserved so the slab doesn't grow mid-sentence and shove
+     itself (and Clem) up the screen as the typewriter wraps. */
+  min-height: 3.5em;
+  color: var(--clem-text);
+  font-size: clamp(0.96rem, 0.88rem + 0.35vw, 1.1rem);
+  line-height: 1.75;
+  letter-spacing: 0.015em;
+  text-shadow: 0 2px 6px rgb(0 0 0 / 0.55);
+}
+
+.caret {
+  display: inline-block;
+  width: 0.48em;
+  height: 0.95em;
+  margin-left: 0.12em;
+  vertical-align: -0.12em;
+  background: var(--clem-accent);
+  animation: clemCaret 620ms steps(1, end) infinite;
+}
+
+.action {
+  margin-top: 0.85rem;
+  padding: 0.45rem 1.05rem;
+  border: 3px solid var(--clem-ink);
+  border-radius: 999px;
+  background: var(--clem-accent);
+  color: var(--clem-ink);
+  font-family: inherit;
+  font-size: 0.82rem;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  box-shadow: 4px 4px 0 rgb(22 18 31 / 0.55);
+  transition: transform 130ms ease, box-shadow 130ms ease;
+}
+
+.action:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 rgb(22 18 31 / 0.55);
+}
+
+.action:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 rgb(22 18 31 / 0.55);
+}
+
+/* ---------- controls ---------- */
+
+.dismiss {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.6rem;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: rgb(255 255 255 / 0.45);
+  cursor: pointer;
+  transition: color 140ms ease, background-color 140ms ease;
+}
+
+.dismiss:hover {
+  color: var(--clem-text);
+  background: rgb(255 255 255 / 0.1);
+}
+
+.next {
+  position: absolute;
+  right: 0.85rem;
+  bottom: 0.8rem;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 3px solid var(--clem-ink);
+  border-radius: 999px;
+  background: var(--clem-accent);
+  color: var(--clem-ink);
+  cursor: pointer;
+  /* Always visible and always operable: mid-type it skips, once the line has
+     landed it advances. Hiding it would leave a focusable invisible control. */
+  opacity: 0.55;
+  transition: opacity 180ms ease;
+}
+
+.next[data-ready='true'] {
+  opacity: 1;
+  animation: clemChevron 1.15s ease-in-out infinite;
+}
+
+.root :focus-visible {
+  outline: 3px solid var(--clem-accent);
+  outline-offset: 3px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- keyframes ---------- */
+
+@keyframes clemStageIn {
+  0% {
+    opacity: 0;
+    transform: rotate(-0.6deg) translateY(26px) scale(0.94);
+  }
+  60% {
+    opacity: 1;
+    transform: rotate(-0.6deg) translateY(-4px) scale(1.015);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-0.6deg) translateY(0) scale(1);
+  }
+}
+
+@keyframes clemPopIn {
+  0% {
+    opacity: 0;
+    transform: translateY(34px) scale(0.4) rotate(-14deg);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.07) rotate(3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes clemSplat {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) rotate(-30deg);
+  }
+  35% {
+    opacity: 0.85;
+    transform: scale(1.12) rotate(6deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.45) rotate(14deg);
+  }
+}
+
+@keyframes clemCaret {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes clemChevron {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 30rem) {
+  .root {
+    --clem-size: 136px;
+    --clem-overlap: 52px;
+  }
+
+  .panel {
+    padding: 0.9rem 2.9rem 1.15rem 1.1rem;
+  }
+
+  .mascot {
+    left: 8px;
+  }
+
+  .root[data-side='right'] .mascot {
+    right: 8px;
+  }
+
+  /* Keep the splatter inside the viewport on narrow screens. */
+  .speckles {
+    right: 2px;
+  }
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .mascot {
+    animation: clemFade 200ms ease both;
+  }
+
+  .splat {
+    display: none;
+  }
+
+  .caret,
+  .next[data-ready='true'] {
+    animation: none;
+  }
+
+  .action {
+    transition: none;
+  }
+
+  @keyframes clemFade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
