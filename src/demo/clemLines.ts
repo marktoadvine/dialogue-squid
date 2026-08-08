@@ -7,7 +7,7 @@ import type { ClemMessage } from '../components/ClemDialogue'
 export const CLEM_LINES: ClemMessage[] = [
   {
     text: '*bluuurrp* ... Looking for something? Try clicking “About” to learn more!',
-    mood: 'curious',
+    mood: 'happy',
   },
   {
     text: "See that arrow? It means I've got lots to say. Go on, click it, dudes!",
