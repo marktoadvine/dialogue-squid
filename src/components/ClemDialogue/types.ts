@@ -53,7 +53,10 @@ export interface ClemDialogueProps {
   appearDelayMs?: number
   /** Milliseconds per character for the typewriter. Defaults to 28. */
   typeSpeed?: number
-  /** Which side of the screen Clem occupies. Defaults to 'left'. */
+  /**
+   * Which corner of the panel Clem perches on. The panel itself is always
+   * centred. Defaults to 'left'.
+   */
   side?: 'left' | 'right'
   /** Advance automatically this long after a line finishes typing. */
   autoAdvanceMs?: number | null
