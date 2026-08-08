@@ -49,25 +49,33 @@ export function Clem({
       focusable="false"
     >
       <defs>
+        {/* The well is morphed by CSS alongside the goggle, so it carries a
+            class even though it only ever acts as a clip. */}
         <clipPath id={wellId}>
-          <path d="M60 43 C72 43 82 45 86 49 C90 53 90 59 86 63 C82 66 77 66 73 62 C69 59 65 57 60 57 C55 57 51 59 47 62 C43 66 38 66 34 63 C30 59 30 53 34 49 C38 45 48 43 60 43 Z" />
+          <path
+            className={styles.well}
+            d="M60 43 C72 43 82 45 86 49 C90 53 90 59 86 63 C82 66 77 66 73 62 C69 59 65 57 60 57 C55 57 51 59 47 62 C43 66 38 66 34 63 C30 59 30 53 34 49 C38 45 48 43 60 43 Z"
+          />
         </clipPath>
       </defs>
 
       <g className={styles.bob}>
-        {/* Tentacles first — the mantle and nubs cover where they attach. */}
+        {/* Tentacles first — the mantle and nubs cover where they attach.
+            Each one descends, then bends outward and flattens where it meets
+            the panel, with a wider tip: a limb taking weight spreads, and one
+            that tapers to a point reads as floating. */}
         <g className={styles.tentacles}>
           <path
             className={`${styles.tentacle} ${styles.t1}`}
-            d="M35 86 C29 102 25 116 28 130 C29 136 37 136 38 130 C41 116 43 102 45 86 Z"
+            d="M35 86 C31 100 25 111 17 119 C11 125 15 133 24 132 C32 131 38 117 42 103 C44 95 45 90 45 86 Z"
           />
           <path
             className={`${styles.tentacle} ${styles.t2}`}
-            d="M55 88 C53 102 52 116 54 130 C55 136 63 136 64 130 C66 116 65 102 63 88 Z"
+            d="M55 88 C54 101 53 113 56 123 C58 130 67 132 70 126 C72 120 67 108 65 97 C64 92 64 90 64 88 Z"
           />
           <path
             className={`${styles.tentacle} ${styles.t3}`}
-            d="M85 86 C91 102 95 116 92 130 C91 136 83 136 82 130 C79 116 77 102 75 86 Z"
+            d="M85 86 C89 100 95 111 103 119 C109 125 105 133 96 132 C88 131 82 117 78 103 C76 95 75 90 75 86 Z"
           />
         </g>
 
@@ -104,19 +112,14 @@ export function Clem({
               <ellipse className={styles.pupil} cx="75" cy="52" rx="8" ry="7" />
             </g>
 
-            {/* Blinking moves this group; mood moves the lids inside it. Two
-                levels so the two never fight over `transform`. The lids
-                overlap at the centre so no seam shows between them. */}
-            <g className={styles.lids}>
-              <path
-                className={styles.lidLeft}
-                d="M16 4 H62 V40 C52 47 38 47 28 43 C24 41 19 41 16 42 Z"
-              />
-              <path
-                className={styles.lidRight}
-                d="M58 4 H104 V42 C101 41 96 41 92 43 C82 47 68 47 58 40 Z"
-              />
-            </g>
+            {/* Blinking only. Mood is carried by the mask shapes themselves,
+                so a single lid is enough — it just drops and springs back.
+                At rest it sits clear of the well; if it overlaps, every mood
+                inherits a droop that isn't in its path. */}
+            <path
+              className={styles.lid}
+              d="M12 -4 H108 V34 C88 42 32 42 12 34 Z"
+            />
           </g>
         </g>
       </g>

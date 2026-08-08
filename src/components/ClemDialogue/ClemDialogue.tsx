@@ -1,6 +1,7 @@
+'use client'
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
-import '@fontsource/slackey'
 import { Clem, InkSplat } from './Clem'
 import { toMessage } from './types'
 import type { ClemDialogueProps, ClemMessage } from './types'

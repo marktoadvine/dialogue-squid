@@ -6,24 +6,19 @@ where to click. He has no mouth; the eyebrows do all the talking.
 
 ![Clem perched on his dialogue box](docs/preview.png)
 
-Zero runtime dependencies. One CSS Module, one hand-drawn SVG, and a handful of hooks.
+No runtime dependencies beyond React. 12 kB of JS, one stylesheet, one hand-drawn SVG.
 
 ---
 
-## Quick start
+## Install
 
 ```bash
-npm install
-npm run dev
+npm install github:marktoadvine/dialogue-squid
 ```
 
-That opens a deliberately empty page with nothing on it but Clem, plus a small toggle in
-the corner for flipping the backdrop between white and dark.
-
-To use him in your own app:
-
 ```tsx
-import { ClemDialogue } from './components/ClemDialogue'
+import { ClemDialogue } from 'dialogue-squid'
+import 'dialogue-squid/styles.css'
 
 <ClemDialogue
   messages={[
@@ -33,20 +28,41 @@ import { ClemDialogue } from './components/ClemDialogue'
 />
 ```
 
-Copy `src/components/ClemDialogue/` into your project. It imports nothing outside itself
-except React and the font (below).
+That's the whole integration. React is a peer dependency (`>=18`); nothing else is
+required.
 
 ### The font
 
-Clem is set in [Slackey](https://fonts.google.com/specimen/Slackey), self-hosted so
-there's no CDN request:
+Clem is set in [Slackey](https://fonts.google.com/specimen/Slackey). It is **optional** —
+without it he falls back to a rounded system stack and nothing breaks. To get the real
+thing, install it and import it once in your app entry:
 
 ```bash
 npm install @fontsource/slackey
 ```
 
-`ClemDialogue.tsx` imports it. If you'd rather supply the face yourself, drop that import
-and set `--clem-font`. Without either, he falls back to a rounded system stack.
+```tsx
+import '@fontsource/slackey'
+```
+
+Self-hosted, so there's no CDN request. Prefer a different face? Skip the install and set
+`--clem-font` instead.
+
+### Copying the source instead
+
+If you'd rather own the code than depend on it, copy `src/components/ClemDialogue/` into
+your project and import from the folder. It pulls in nothing but React — the font is the
+app's job, not the component's, so there's no hidden dependency to trip over.
+
+### Running the demo
+
+```bash
+git clone https://github.com/marktoadvine/dialogue-squid && cd dialogue-squid
+npm install && npm run dev
+```
+
+A deliberately empty page with nothing on it but Clem, and a small toggle in the corner
+for flipping the backdrop between white and dark.
 
 Slackey ships a single weight, so hierarchy inside the panel comes from size and colour
 rather than bold-vs-regular — worth knowing if you restyle it.
@@ -78,12 +94,12 @@ The panel is fixed to the bottom centre of the viewport. `side` moves Clem from 
 its top edge to the other — and takes the dismiss button with it, to the opposite corner.
 
 ```ts
-type ClemMood = 'idle' | 'curious' | 'excited' | 'sly' | 'surprised'
+type ClemMood = 'idle' | 'curious' | 'excited' | 'sly' | 'happy'
 
 interface ClemMessage {
   id?: string
   text: string
-  mood?: ClemMood                 // drives his eyelids — there is no mouth
+  mood?: ClemMood                 // reshapes his eye mask — there is no mouth
   action?: {
     label: string
     onClick?: () => void
@@ -91,6 +107,19 @@ interface ClemMessage {
   }
 }
 ```
+
+| Mood | |
+| --- | --- |
+| `idle` | Neutral. |
+| `curious` | One brow up. |
+| `excited` | Wide-eyed. |
+| `sly` | Half-lidded, eyes open — the smirk. |
+| `happy` | Eyes closed, two upward arcs — the cheeky one. |
+
+Expression is the mask itself changing shape, animated through the CSS `d` property. That
+needs Chrome/Edge 98+, Firefox 97+, or Safari 16.4+. Below that the morphs are skipped and
+Clem keeps his neutral mask — he still blinks and everything else works, so it degrades
+rather than breaking.
 
 ### The idle nudge
 
@@ -170,8 +199,8 @@ import { ClemDialogue } from '../components/ClemDialogue'
 <ClemDialogue client:visible messages={["Looking for something?"]} />
 ```
 
-**Next.js (App Router)** — he uses state and effects, so he's a client component. Either
-add `'use client'` at the top of `ClemDialogue.tsx` or import him from a file that has it.
+**Next.js (App Router)** — nothing to do. The package ships with `'use client'` on the
+bundle, so he works in a server-rendered tree as-is.
 
 **Vite / CRA** — nothing special; the quick start above is it.
 
@@ -196,7 +225,9 @@ add `'use client'` at the top of `ClemDialogue.tsx` or import him from a file th
 | | |
 | --- | --- |
 | `npm run dev` | Blank page with Clem on it |
-| `npm run build` | Typecheck and production build |
+| `npm run build` | Library then demo |
+| `npm run build:lib` | The publishable library → `dist/` |
+| `npm run build:demo` | The demo page → `dist-demo/` |
 | `npm run typecheck` | `tsc -b` |
 | `npm run lint` | ESLint |
 
@@ -209,10 +240,22 @@ named speaker, typewriter text. The specifics are original: no hazard-stripe tap
 square portrait frame, no dotted-line name tag, original palette, original character.
 Clem is his own squid.
 
-Two things about him are load-bearing rather than decorative. **Nothing on the character
-is stroked** — every shape is a flat fill in one colour, so separation comes from gaps in
-the geometry, which is why his tentacles and the nubs along his hem are spaced the way
-they are. And **the whole face is one graphic**: a black mask, a white well clipped inside
-it, two pupils, and a pair of lids that slide around within the well. Blinking moves the
-lid group; mood moves each lid individually, so the two never fight over `transform`. That
-split is what lets him raise one brow.
+Three things about him are load-bearing rather than decorative.
+
+**Nothing on the character is stroked.** Every shape is a flat fill in one colour, so
+separation comes from gaps in the geometry — which is why his tentacles and the nubs along
+his hem are spaced the way they are.
+
+**The whole face is one graphic**: a black mask, a white well clipped inside it, and two
+pupils. Every expression is those two paths changing shape together. Moving the *well* is
+what thickens or thins the black above each eye — that's the eyebrow. Moving the *mask*
+lets the whole thing squash or arc. A lid still exists, but only to blink.
+
+Because `d` interpolates only between paths with an identical command sequence, every mood
+in `Clem.module.css` is the same eight cubic curves with the control points moved. If you
+add a mood, move the points — never add or remove a segment, or it will snap instead of
+morph.
+
+**His tentacles are shaped to carry weight.** They bend outward and flatten where they meet
+the panel, and the idle sway is deliberately tiny with its pivot up at the attachment, so
+the tips stay planted. A wider sway would undo the whole effect.

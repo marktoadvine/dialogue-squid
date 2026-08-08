@@ -1,5 +1,8 @@
-/** The expressions Clem can pull. Drives his brows and mouth. */
-export type ClemMood = 'idle' | 'curious' | 'excited' | 'sly' | 'surprised'
+/**
+ * The expressions Clem can pull. Each one reshapes his eye mask; he has no
+ * mouth. `sly` is the eyes-open smirk, `happy` the eyes-closed one.
+ */
+export type ClemMood = 'idle' | 'curious' | 'excited' | 'sly' | 'happy'
 
 /** An optional button rendered inside the panel, under the message. */
 export interface ClemAction {

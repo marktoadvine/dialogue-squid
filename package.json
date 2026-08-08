@@ -1,22 +1,59 @@
 {
   "name": "dialogue-squid",
-  "private": true,
   "version": "0.1.0",
+  "description": "A game-style dialogue popup for React, with a squid mascot who does the talking.",
+  "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marktoadvine/dialogue-squid.git"
+  },
+  "keywords": [
+    "react",
+    "react-component",
+    "dialogue",
+    "mascot",
+    "popup",
+    "typewriter"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "types",
+    "README.md"
+  ],
+  "main": "./dist/dialogue-squid.js",
+  "module": "./dist/dialogue-squid.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/dialogue-squid.js"
+    },
+    "./styles.css": {
+      "types": "./types/styles.css.d.ts",
+      "default": "./dist/dialogue-squid.css"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run build:lib && npm run build:demo",
+    "build:lib": "vite build --config vite.lib.config.ts",
+    "build:demo": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "prepare": "npm run build:lib"
   },
-  "dependencies": {
-    "@fontsource/slackey": "^5.2.5",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+  "peerDependencies": {
+    "react": ">=18"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@fontsource/slackey": "^5.2.5",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
@@ -24,8 +61,11 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
-    "vite": "^7.1.2"
+    "vite": "^7.1.2",
+    "vite-plugin-dts": "^4.5.4"
   }
 }
