@@ -1,0 +1,266 @@
+/*
+ * Clem's rig. Three rules govern the whole file:
+ *   1. Nothing on the character is stroked. Every shape is a fill, and every
+ *      body part is the same fill, so separation comes from gaps in the
+ *      geometry rather than outlines.
+ *   2. Expression is the eye mask changing shape — both the black goggle and
+ *      the white well inside it morph per mood. There is no mouth.
+ *   3. Every looping animation is switched off by either `.still` (JS-detected
+ *      reduced motion) or the media query at the bottom, which holds before
+ *      hydration.
+ */
+
+.clem {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-box: fill-box;
+  transform-origin: 50% 92%;
+  transition: transform 700ms cubic-bezier(0.34, 1.3, 0.5, 1);
+}
+
+/* The idle "look around" — he leans rather than hides, since he now sits on
+   top of the panel instead of standing behind it. */
+.looking {
+  transform: rotate(7deg);
+}
+
+/* ---------- body ---------- */
+
+.mantle,
+.nubs,
+.tentacle {
+  fill: var(--clem-body, #ffd23f);
+}
+
+/* Sway pivots at the attachment, and stays small: these tentacles are resting
+   their weight on the panel, and a limb that waves doesn't read as heavy. */
+.tentacle {
+  transform-box: view-box;
+  animation: clemSway 3.4s ease-in-out infinite;
+}
+
+.t1 {
+  transform-origin: 40px 88px;
+  animation-delay: -0.3s;
+}
+.t2 {
+  transform-origin: 59px 90px;
+  animation-delay: -1.4s;
+}
+.t3 {
+  transform-origin: 80px 88px;
+  animation-delay: -2.3s;
+}
+
+@keyframes clemSway {
+  0%,
+  100% {
+    transform: rotate(-1.6deg);
+  }
+  50% {
+    transform: rotate(1.6deg);
+  }
+}
+
+/* ---------- the eye mask ---------- */
+
+/*
+ * Both shapes morph together. Moving the *well* is what thickens or thins the
+ * black above each eye — that is the brow. Moving the *goggle* lets the whole
+ * mask squash or arc.
+ *
+ * `d` only interpolates between paths with an identical command sequence, so
+ * every variant below is the same eight cubics with the control points moved.
+ * Never add or remove a segment.
+ *
+ * CSS `d` needs Chrome/Edge 98+, Firefox 97+, Safari 16.4+. Below that these
+ * declarations are ignored, the `d` attribute in the markup renders, and Clem
+ * keeps his idle mask and still blinks.
+ */
+
+.goggle {
+  fill: var(--clem-ink, #16121f);
+  d: path(
+    'M60 34 C76 34 90 37 95 43 C100 49 100 62 94 68 C89 73 80 74 74 69 C69 65 65 63 60 63 C55 63 51 65 46 69 C40 74 31 73 26 68 C20 62 20 49 25 43 C30 37 44 34 60 34 Z'
+  );
+  transition: d 340ms cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.well {
+  d: path(
+    'M60 43 C72 43 82 45 86 49 C90 53 90 59 86 63 C82 66 77 66 73 62 C69 59 65 57 60 57 C55 57 51 59 47 62 C43 66 38 66 34 63 C30 59 30 53 34 49 C38 45 48 43 60 43 Z'
+  );
+  transition: d 340ms cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+/* One brow up, the other level. */
+.clem[data-mood='curious'] .goggle {
+  d: path(
+    'M60 33 C76 35 90 39 95 45 C100 51 100 63 94 68 C89 73 80 74 74 69 C69 65 65 63 60 63 C55 63 51 65 46 69 C40 74 31 73 26 68 C19 62 19 46 23 38 C29 31 44 30 60 33 Z'
+  );
+}
+.clem[data-mood='curious'] .well {
+  d: path(
+    'M60 43 C72 44 82 47 86 51 C90 55 90 60 86 63 C82 66 77 66 73 62 C69 59 65 57 60 57 C55 57 51 59 47 62 C43 66 37 66 33 62 C28 58 28 47 32 43 C37 39 48 41 60 43 Z'
+  );
+}
+
+/* Mask opens taller, well rounds out. */
+.clem[data-mood='excited'] .goggle {
+  d: path(
+    'M60 31 C77 31 91 35 96 42 C101 49 101 63 95 70 C90 76 80 76 74 70 C69 66 65 64 60 64 C55 64 51 66 46 70 C40 76 30 76 25 70 C19 63 19 49 24 42 C29 35 43 31 60 31 Z'
+  );
+}
+.clem[data-mood='excited'] .well {
+  d: path(
+    'M60 40 C73 40 83 43 87 48 C91 53 91 60 87 64 C83 68 77 68 73 63 C69 59 65 58 60 58 C55 58 51 59 47 63 C43 68 37 68 33 64 C29 60 29 53 33 48 C37 43 47 40 60 40 Z'
+  );
+}
+
+/* Well's top edge drops hard on both sides — thick black above, thin slits. */
+.clem[data-mood='sly'] .goggle {
+  d: path(
+    'M60 38 C76 38 90 40 95 45 C100 50 100 61 94 67 C89 72 80 73 74 68 C69 64 65 62 60 62 C55 62 51 64 46 68 C40 73 31 72 26 67 C20 61 20 50 25 45 C30 40 44 38 60 38 Z'
+  );
+}
+.clem[data-mood='sly'] .well {
+  d: path(
+    'M60 50 C71 50 80 51 84 54 C88 57 88 60 84 63 C80 66 76 66 72 62 C68 59 65 58 60 58 C55 58 52 59 48 62 C44 66 40 66 36 63 C32 60 32 57 36 54 C40 51 49 50 60 50 Z'
+  );
+}
+
+/* Eyes closed: the well collapses to two upward-arcing crescents. */
+.clem[data-mood='happy'] .goggle {
+  d: path(
+    'M60 36 C76 36 90 39 95 44 C100 50 100 62 94 68 C89 73 80 74 74 69 C69 65 65 63 60 63 C55 63 51 65 46 69 C40 74 31 73 26 68 C20 62 20 50 25 44 C30 39 44 36 60 36 Z'
+  );
+}
+/* Pinched at the centre so the band reads as two separate arcs rather than
+   one continuous smile. */
+.clem[data-mood='happy'] .well {
+  d: path(
+    'M60 57 C66 48 80 48 86 56 C88 57 88 60 86 61 C82 61 78 57 74 54 C70 52 64 57 60 58 C56 57 50 52 46 54 C42 57 38 61 34 61 C32 60 32 57 34 56 C40 48 54 48 60 57 Z'
+  );
+}
+
+.sclera {
+  fill: #fffdf6;
+}
+
+.pupil {
+  fill: var(--clem-ink, #16121f);
+}
+
+.pupils {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 220ms ease;
+}
+
+/* Closed eyes have no pupils. */
+.clem[data-mood='happy'] .pupils {
+  opacity: 0;
+}
+
+/* Scanning the page while he leans. */
+.looking .pupils {
+  animation: clemScan 2s ease-in-out;
+}
+
+@keyframes clemScan {
+  0% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(-3.5px);
+  }
+  65% {
+    transform: translateX(3.5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* ---------- blinking ---------- */
+
+/* The lid does nothing but blink — mood is carried by the mask shapes. */
+.lid {
+  fill: var(--clem-ink, #16121f);
+  transform-box: fill-box;
+  transform-origin: center top;
+  animation: clemBlink 5.6s ease-in-out infinite;
+}
+
+/* A curved lid edge arriving with overshoot reads as gooey rather than as a
+   camera shutter. */
+@keyframes clemBlink {
+  0%,
+  90%,
+  100% {
+    transform: translateY(0);
+  }
+  94% {
+    transform: translateY(32px);
+  }
+  97% {
+    transform: translateY(-2px);
+  }
+}
+
+/* ---------- idle bob ---------- */
+
+.bob {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: clemBob 3.8s ease-in-out infinite;
+}
+
+/* Shallow, because he's propped on the panel rather than hovering. */
+@keyframes clemBob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-2px) rotate(-1deg);
+  }
+}
+
+/* ---------- talking ---------- */
+
+.talking .lid {
+  animation: clemChatter 460ms ease-in-out infinite;
+}
+
+@keyframes clemChatter {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+/* ---------- reduced motion ---------- */
+
+.still,
+.still * {
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clem,
+  .clem * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .looking {
+    transform: none;
+  }
+}

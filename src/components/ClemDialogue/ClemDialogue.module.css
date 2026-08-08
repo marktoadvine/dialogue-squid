@@ -1,0 +1,363 @@
+/*
+ * Every colour, size and timing lives on .root as a custom property, so a
+ * consuming site can retheme Clem from its own stylesheet without touching
+ * this file.
+ */
+
+.root {
+  --clem-body: #ffd23f;
+  --clem-ink: #16121f;
+  --clem-accent: #ffd23f;
+  --clem-text: #ffffff;
+  --clem-panel: rgb(10 10 12 / 0.9);
+  --clem-panel-blur: 3px;
+  --clem-font: 'Slackey', ui-rounded, 'Segoe UI Rounded', 'Trebuchet MS', system-ui, sans-serif;
+  --clem-z: 9999;
+  --clem-offset: clamp(0.75rem, 3vw, 2rem);
+  --clem-size: 88px;
+  /* How far Clem's bottom edge hangs below the panel's top edge — i.e. how
+     far the tentacles dangle over the front of the slab. */
+  --clem-perch: 30px;
+  /* Headroom inside the panel for the dangling tentacles to occupy. Indenting
+     the name instead would leave it misaligned against the message below it,
+     so the panel gets a top band rather than the text getting pushed around. */
+  --clem-headroom: 2.35rem;
+
+  position: fixed;
+  z-index: var(--clem-z);
+  bottom: var(--clem-offset);
+  left: 0;
+  right: 0;
+  padding-inline: var(--clem-offset);
+  display: flex;
+  justify-content: center;
+  /* The wrapper spans the viewport, so it must not eat clicks. */
+  pointer-events: none;
+  font-family: var(--clem-font);
+}
+
+.stage {
+  position: relative;
+  pointer-events: auto;
+  width: min(100%, 29.5rem);
+  /* The tilt lives here so Clem sits on the tilted ledge, not level above it. */
+  transform: rotate(-2deg);
+  animation: clemStageIn 620ms cubic-bezier(0.22, 1.35, 0.36, 1) both;
+}
+
+/* ---------- mascot ---------- */
+
+.mascot {
+  position: absolute;
+  bottom: calc(100% - var(--clem-perch));
+  /* Far enough in that he sits on the top edge rather than hanging off the
+     rounded corner. */
+  left: 26px;
+  width: calc(var(--clem-size) * 0.857);
+  height: var(--clem-size);
+  /* In front of the panel now — he's sitting on it, not hiding behind it. */
+  z-index: 2;
+  pointer-events: none;
+}
+
+.mascotInner {
+  position: absolute;
+  inset: 0;
+  animation: clemPopIn 680ms cubic-bezier(0.2, 1.5, 0.4, 1) both;
+  animation-delay: 90ms;
+}
+
+.root[data-side='right'] .mascot {
+  left: auto;
+  right: 12px;
+}
+
+.splat {
+  position: absolute;
+  left: -16%;
+  top: -8%;
+  width: 132%;
+  height: 116%;
+  z-index: -1;
+  fill: var(--clem-body);
+  animation: clemSplat 720ms ease-out both;
+}
+
+/* ---------- panel ---------- */
+
+.panel {
+  position: relative;
+  z-index: 1;
+  padding: var(--clem-headroom) 3.05rem 1.15rem 1.25rem;
+  /* No border. The panel is a soft bubble defined by its fill and the
+     diffuse shadow beneath it. */
+  border-radius: 28px 28px 28px 14px;
+  background: var(--clem-panel);
+  -webkit-backdrop-filter: blur(var(--clem-panel-blur));
+  backdrop-filter: blur(var(--clem-panel-blur));
+  box-shadow:
+    0 18px 40px rgb(0 0 0 / 0.32),
+    0 4px 12px rgb(0 0 0 / 0.22);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ---------- name ---------- */
+
+.name {
+  display: inline-block;
+  margin: 0 0 0.45rem;
+  padding-bottom: 4px;
+  border-bottom: 3px solid var(--clem-accent);
+  color: var(--clem-accent);
+  font-size: 0.74rem;
+  line-height: 1;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* ---------- message ---------- */
+
+.text {
+  margin: 0;
+  max-width: 46ch;
+  /* Two lines are reserved so the slab doesn't grow mid-sentence and shove
+     itself (and Clem) up the screen as the typewriter wraps. */
+  min-height: 3.5em;
+  color: var(--clem-text);
+  font-size: clamp(0.88rem, 0.84rem + 0.25vw, 1rem);
+  line-height: 1.75;
+  letter-spacing: 0.015em;
+  text-shadow: 0 2px 6px rgb(0 0 0 / 0.55);
+}
+
+.caret {
+  display: inline-block;
+  width: 0.48em;
+  height: 0.95em;
+  margin-left: 0.12em;
+  vertical-align: -0.12em;
+  background: var(--clem-accent);
+  animation: clemCaret 620ms steps(1, end) infinite;
+}
+
+.action {
+  margin-top: 0.8rem;
+  padding: 0.4rem 0.95rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--clem-accent);
+  color: var(--clem-ink);
+  font-family: inherit;
+  font-size: 0.75rem;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.3);
+  transition: transform 130ms ease, box-shadow 130ms ease;
+}
+
+.action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 0.36);
+}
+
+.action:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.3);
+}
+
+/* ---------- controls ---------- */
+
+.dismiss {
+  position: absolute;
+  top: 0.45rem;
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: rgb(255 255 255 / 0.45);
+  cursor: pointer;
+  transition: color 140ms ease, background-color 140ms ease;
+}
+
+/* Always in the corner opposite Clem, or he sits on top of it. */
+.root[data-side='left'] .dismiss {
+  right: 0.55rem;
+}
+
+.root[data-side='right'] .dismiss {
+  left: 0.55rem;
+}
+
+.dismiss:hover {
+  color: var(--clem-text);
+  background: rgb(255 255 255 / 0.1);
+}
+
+.next {
+  position: absolute;
+  right: 0.8rem;
+  bottom: 0.75rem;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: var(--clem-accent);
+  color: var(--clem-ink);
+  cursor: pointer;
+  /* Always visible and always operable: mid-type it skips, once the line has
+     landed it advances. Hiding it would leave a focusable invisible control. */
+  opacity: 0.55;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.35);
+  transition: opacity 180ms ease;
+}
+
+.next[data-ready='true'] {
+  opacity: 1;
+  animation: clemChevron 1.15s ease-in-out infinite;
+}
+
+.root :focus-visible {
+  outline: 3px solid var(--clem-accent);
+  outline-offset: 3px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- keyframes ---------- */
+
+@keyframes clemStageIn {
+  0% {
+    opacity: 0;
+    transform: rotate(-2deg) translateY(26px) scale(0.94);
+  }
+  60% {
+    opacity: 1;
+    transform: rotate(-2deg) translateY(-4px) scale(1.015);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-2deg) translateY(0) scale(1);
+  }
+}
+
+@keyframes clemPopIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.4) rotate(-14deg);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.07) rotate(3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes clemSplat {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) rotate(-30deg);
+  }
+  35% {
+    opacity: 0.7;
+    transform: scale(1.1) rotate(6deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.4) rotate(14deg);
+  }
+}
+
+@keyframes clemCaret {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes clemChevron {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 30rem) {
+  .root {
+    --clem-size: 72px;
+    --clem-perch: 24px;
+    --clem-headroom: 1.95rem;
+  }
+
+  .panel {
+    padding: var(--clem-headroom) 2.7rem 1.05rem 1.05rem;
+  }
+
+  .mascot {
+    left: 18px;
+  }
+
+  .root[data-side='right'] .mascot {
+    right: 18px;
+  }
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .mascotInner {
+    animation: clemFade 200ms ease both;
+  }
+
+  .splat {
+    display: none;
+  }
+
+  .caret,
+  .next[data-ready='true'] {
+    animation: none;
+  }
+
+  .action {
+    transition: none;
+  }
+
+  @keyframes clemFade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
