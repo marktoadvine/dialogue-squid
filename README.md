@@ -43,7 +43,7 @@ Drop him in once, near the root of your app, and he handles himself:
 5. **If you give him an `idleNudge`, he comes back on his own** after a quiet stretch.
 
 He is not a modal. He never blocks the page, never traps the keyboard, and never steals
-focus — a visitor can ignore him completely and nothing is in their way.
+focus; a visitor can ignore him and nothing is in their way.
 
 ---
 
@@ -59,7 +59,7 @@ A plain string is a line:
 ```tsx
 <ClemDialogue
   messages={[
-    'Looking for something? Try clicking “About” to learn more about Mark!',
+    'Looking for something? Try clicking “About” to learn more!',
     'That little arrow means there is more to read.',
     'Squid fact: I have three hearts.',
   ]}
@@ -74,8 +74,8 @@ shape instead.
 ```tsx
 <ClemDialogue
   messages={[
-    { text: 'Psst — over here!', mood: 'curious' },
-    { text: 'Told you it was worth a look.', mood: 'sly' },
+    { text: 'Psst... over here!', mood: 'curious' },
+    { text: '*bluurrp* Told you it was worth a look.', mood: 'sly' },
     { text: 'That is all I had.', mood: 'happy' },
   ]}
 />
@@ -86,8 +86,8 @@ shape instead.
 | `idle` | Neutral. The default. |
 | `curious` | One brow up. |
 | `excited` | Wide-eyed. |
-| `sly` | Half-lidded, eyes open — the smirk. |
-| `happy` | Eyes closed, two upward arcs — the cheeky one. |
+| `sly` | Half-lidded, eyes open and the smirk. |
+| `happy` | Eyes closed, two upward arcs, cheeky! |
 
 ### Add a button
 
@@ -145,10 +145,10 @@ the countdown. Without `repeat: true` he nudges once and then leaves the visitor
 
 ---
 
-## Driving him from your app
+## Driving him from your app or site
 
-By default Clem manages his own visibility. If you want to control it — show him on one
-page, or after something happens — pass `open` and keep it in state:
+By default Clem manages his own visibility. If you want to control it (show him on one
+page, or after something happens) pass `open` and keep it in state:
 
 ```tsx
 const [open, setOpen] = useState(false)
@@ -216,8 +216,8 @@ of its top edge to the other, and takes the dismiss button with him to the oppos
 
 ### The font
 
-Clem is set in [Slackey](https://fonts.google.com/specimen/Slackey). It is **optional** —
-without it he falls back to a rounded system stack and nothing breaks. To get the real
+Clem is set in [Slackey](https://fonts.google.com/specimen/Slackey). It is **optional** and you can
+use whatever font you'd like - without Slackey, Clem falls back to a rounded system stack and nothing breaks. To get the real
 thing, install it and import it once in your app entry:
 
 ```bash
@@ -230,8 +230,7 @@ import '@fontsource/slackey'
 
 Self-hosted, so there's no CDN request. Prefer a different face? Skip the install and set
 `--clem-font` instead. Note that Slackey ships a single weight, so hierarchy inside the
-panel comes from size and colour rather than bold-vs-regular — worth knowing if you restyle
-it.
+panel comes from size and colour rather than bold-vs-regular; good to know if you restyle.
 
 ---
 
@@ -279,7 +278,7 @@ interface ClemIdleNudge {
 
 ## Framework notes
 
-**Astro** — CSS Modules work natively (Astro runs on Vite), so he drops in as an island
+**Astro** - CSS Modules work natively (Astro runs on Vite), so he drops in as an island
 with no extra config:
 
 ```astro
@@ -290,12 +289,12 @@ import 'dialogue-squid/styles.css'
 <ClemDialogue client:visible messages={["Looking for something?"]} />
 ```
 
-**Next.js (App Router)** — nothing to do. The package ships with `'use client'` on the
+**Next.js (App Router)**, nothing to do. The package ships with `'use client'` on the
 bundle, so he works inside a server-rendered tree as-is.
 
 **Vite / CRA** — nothing special; the install above is it.
 
-**Copying the source instead** — if you'd rather own the code than depend on it, copy
+**Copying the source instead** if you'd rather own the code than depend on it, copy
 `src/components/ClemDialogue/` into your project and import from the folder. It pulls in
 nothing but React; the font is the app's job, not the component's, so there's no hidden
 dependency to trip over.
@@ -342,20 +341,25 @@ toggle in the corner for flipping the backdrop between white and dark.
 Two rules hold the mascot together, and both will bite you if you edit him without knowing.
 
 **Nothing on the character is stroked.** Every shape is a flat fill in one colour, so
-separation comes from gaps in the geometry — that's why his tentacles and the nubs along
+separation comes from gaps in the geometry. That's why his tentacles and the nubs along
 his hem are spaced the way they are.
 
 **His whole face is one graphic**: a black mask, a white well clipped inside it, and two
 pupils. Each mood is those two paths changing shape together, animated through the CSS `d`
 property. Because `d` only interpolates between paths with an identical command sequence,
 every mood in `Clem.module.css` is the same eight cubic curves with the control points
-moved. If you add a mood, move the points — never add or remove a segment, or it will snap
+moved. If you add a mood, move the points. Never add or remove a segment, or it will snap
 instead of morph.
 
 Mask morphing needs Chrome/Edge 98+, Firefox 97+, or Safari 16.4+. Below that the morphs
 are skipped and Clem keeps his neutral face; he still blinks, and everything else works.
 
-The layout takes its cue from game dialogue boxes generally — a bottom-anchored bubble, a
+The layout takes its cue from game dialogue boxes generally, a bottom-anchored bubble, a
 named speaker, typewriter text. The specifics are original: no hazard-stripe tape, no
 square portrait frame, no dotted-line name tag, original palette, original character. Clem
 is his own squid.
+
+## Last thoughts
+
+Yes, the squid is inspired, but not copied, from the 'Splatoon' series from Nintendo. Nintendo holds all applicacle copyright to their squid.
+Have fun with Clem!
