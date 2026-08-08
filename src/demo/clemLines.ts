@@ -6,26 +6,26 @@ import type { ClemMessage } from '../components/ClemDialogue'
  */
 export const CLEM_LINES: ClemMessage[] = [
   {
-    text: 'Looking for something? Try clicking “About” to learn more about Mark!',
+    text: '*bluuurrp* ... Looking for something? Try clicking “About” to learn more!',
     mood: 'curious',
   },
   {
-    text: "See that little arrow? It means I've got more to say. Go on, click it!",
+    text: "See that arrow? It means I've got lots to say. Go on, click it, dudes!",
     mood: 'excited',
   },
   {
-    text: 'Squid fact: I have three hearts! Mark only has one, but he spends it all on CSS.',
+    text: 'Squid fact: I have three hearts! Humans only have one.',
     mood: 'sly',
   },
   {
-    text: 'Whoa! You made it to the end. That is genuinely all I had.',
+    text: 'Whoa! You made it to the end. You want some ink?',
     mood: 'happy',
   },
 ]
 
 export const NUDGE_LINES: ClemMessage[] = [
   {
-    text: "Hey! Still there? Take your time — I'm not going anywhere.",
+    text: "*blurp*.. Still there? Take your time, I'm just swimmin'.",
     mood: 'curious',
   },
 ]
