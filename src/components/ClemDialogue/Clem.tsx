@@ -1,63 +1,37 @@
+import { useId } from 'react'
 import type { ClemMood } from './types'
 import styles from './Clem.module.css'
 
-interface MouthShape {
-  d: string
-  filled: boolean
-}
-
-/**
- * Clem's face is two lookup tables. Brows do most of the acting — they read at
- * small sizes in a way a mouth never does — so each mood mostly means "where
- * are the brows".
- */
-const MOUTHS: Record<ClemMood, MouthShape> = {
-  idle: { d: 'M68 112 Q80 122 92 112', filled: false },
-  curious: {
-    d: 'M80 106 C85 106 88 110 88 114 C88 119 85 122 80 122 C75 122 72 119 72 114 C72 110 75 106 80 106 Z',
-    filled: true,
-  },
-  excited: { d: 'M65 107 C72 127 88 127 95 107 Z', filled: true },
-  sly: { d: 'M67 117 Q80 117 94 106', filled: false },
-  surprised: {
-    d: 'M80 102 C87 102 92 108 92 114 C92 121 87 126 80 126 C73 126 68 121 68 114 C68 108 73 102 80 102 Z',
-    filled: true,
-  },
-}
-
-const BROWS: Record<ClemMood, { left: string; right: string }> = {
-  idle: { left: 'M46 66 Q60 57 75 63', right: 'M114 66 Q100 57 85 63' },
-  // One brow up, one level — the universal "hmm?"
-  curious: { left: 'M46 61 Q60 48 75 57', right: 'M114 67 Q100 60 85 64' },
-  excited: { left: 'M46 57 Q60 45 75 54', right: 'M114 57 Q100 45 85 54' },
-  sly: { left: 'M46 59 Q60 54 75 66', right: 'M114 66 Q100 57 85 62' },
-  surprised: { left: 'M45 53 Q60 41 76 51', right: 'M115 53 Q100 41 84 51' },
-}
-
 export interface ClemProps {
   mood?: ClemMood
-  /** Mouth flaps and brows jitter while a line is being typed. */
+  /** Lids and brows jitter while a line is being typed. */
   talking?: boolean
-  /** Leans out from behind the panel to peer at the visitor. */
-  peeking?: boolean
+  /** Leans and scans the page during an idle stretch. */
+  looking?: boolean
   /** Kills every looping animation. */
   stillness?: boolean
   className?: string
 }
 
+/**
+ * Clem is built entirely from fills — there is not a single stroke on the
+ * character. His whole face is one graphic: a black goggle, a white well
+ * clipped inside it, two pupils, and a pair of lids that slide around within
+ * the well. Every expression is those lids moving; there is no mouth.
+ */
 export function Clem({
   mood = 'idle',
   talking = false,
-  peeking = false,
+  looking = false,
   stillness = false,
   className,
 }: ClemProps) {
-  const mouth = MOUTHS[mood]
-  const brows = BROWS[mood]
+  // useId emits colons, which are legal in an id but awkward in url(#…).
+  const wellId = `clem-well-${useId().replace(/:/g, '')}`
 
   const rootClass = [
     styles.clem,
-    peeking ? styles.peeking : '',
+    looking ? styles.looking : '',
     talking ? styles.talking : '',
     stillness ? styles.still : '',
     className ?? '',
@@ -68,83 +42,82 @@ export function Clem({
   return (
     <svg
       className={rootClass}
-      viewBox="0 0 160 190"
+      data-mood={mood}
+      viewBox="0 0 120 140"
       role="img"
       aria-label="Clem, a cheerful yellow squid"
       focusable="false"
     >
+      <defs>
+        <clipPath id={wellId}>
+          <path d="M60 43 C72 43 82 45 86 49 C90 53 90 59 86 63 C82 66 77 66 73 62 C69 59 65 57 60 57 C55 57 51 59 47 62 C43 66 38 66 34 63 C30 59 30 53 34 49 C38 45 48 43 60 43 Z" />
+        </clipPath>
+      </defs>
+
       <g className={styles.bob}>
-        {/* Tentacles first so the mantle's base overlaps where they attach. */}
+        {/* Tentacles first — the mantle and nubs cover where they attach. */}
         <g className={styles.tentacles}>
           <path
             className={`${styles.tentacle} ${styles.t1}`}
-            d="M36 116 C30 134 26 150 28 166 C29 172 37 173 40 167 C46 152 48 132 50 118 Z"
+            d="M35 86 C29 102 25 116 28 130 C29 136 37 136 38 130 C41 116 43 102 45 86 Z"
           />
           <path
             className={`${styles.tentacle} ${styles.t2}`}
-            d="M58 122 C54 142 52 158 54 174 C55 180 63 181 65 175 C69 158 70 140 72 122 Z"
+            d="M55 88 C53 102 52 116 54 130 C55 136 63 136 64 130 C66 116 65 102 63 88 Z"
           />
           <path
             className={`${styles.tentacle} ${styles.t3}`}
-            d="M102 122 C106 142 108 158 106 174 C105 180 97 181 95 175 C91 158 90 140 88 122 Z"
-          />
-          <path
-            className={`${styles.tentacle} ${styles.t4}`}
-            d="M124 116 C130 134 134 150 132 166 C131 172 123 173 120 167 C114 152 112 132 110 118 Z"
+            d="M85 86 C91 102 95 116 92 130 C91 136 83 136 82 130 C79 116 77 102 75 86 Z"
           />
         </g>
 
-        {/* Fins sit behind the mantle so their inner edges disappear under it.
-            Swept back and down — small round ones read as ears, not fins. */}
+        {/* One arrowhead. The fins are part of the silhouette, not add-ons —
+            they sweep out and down to points rather than bulging. */}
         <path
-          className={styles.fin}
-          d="M48 40 C28 27 6 37 3 60 C22 72 41 62 52 52 Z"
-        />
-        <path
-          className={styles.fin}
-          d="M112 40 C132 27 154 37 157 60 C138 72 119 62 108 52 Z"
+          className={styles.mantle}
+          d="M60 8 C73 10 94 28 105 48 C110 56 113 66 111 70 C108 72 102 68 96 65 C92 63 90 62 87 61 C89 70 89 78 89 84 L31 84 C31 78 31 70 33 61 C30 62 28 63 24 65 C18 68 12 72 9 70 C7 66 10 56 15 48 C26 28 47 10 60 8 Z"
         />
 
-        <g className={styles.mantle}>
-          {/* A squid mantle is a cone, not a dome — the apex stays tight. */}
-          <path
-            className={styles.body}
-            d="M80 4 C93 6 127 48 133 90 C137 116 111 131 80 131 C49 131 23 116 27 90 C33 48 67 6 80 4 Z"
-          />
-          <ellipse
-            className={styles.gloss}
-            cx="54"
-            cy="40"
-            rx="13"
-            ry="8"
-            transform="rotate(-38 54 40)"
-          />
+        {/* The hem: small tentacle nubs poking below the mantle's bottom edge.
+            Same fill as everything else — the gaps between them do the
+            separating, since nothing here is outlined. */}
+        <g className={styles.nubs}>
+          <circle cx="37.5" cy="88" r="7.4" />
+          <circle cx="52.5" cy="88" r="7.4" />
+          <circle cx="67.5" cy="88" r="7.4" />
+          <circle cx="82.5" cy="88" r="7.4" />
         </g>
 
         <g className={styles.face}>
-          <g className={styles.brows}>
-            <path className={styles.brow} d={brows.left} />
-            <path className={styles.brow} d={brows.right} />
-          </g>
-
-          <g className={`${styles.eye} ${styles.eyeLeft}`}>
-            <ellipse className={styles.sclera} cx="60" cy="86" rx="17" ry="19" />
-            <ellipse className={styles.pupil} cx="63" cy="89" rx="8.5" ry="10" />
-            <circle className={styles.glint} cx="66.5" cy="83.5" r="3.4" />
-          </g>
-          <g className={`${styles.eye} ${styles.eyeRight}`}>
-            <ellipse className={styles.sclera} cx="100" cy="86" rx="17" ry="19" />
-            <ellipse className={styles.pupil} cx="103" cy="89" rx="8.5" ry="10" />
-            <circle className={styles.glint} cx="106.5" cy="83.5" r="3.4" />
-          </g>
-
-          {/* CSS beats presentation attributes, so fill is selected via the
-              data attribute rather than a fill="none" attribute. */}
+          {/* The frame is deliberately heavy — a thin rim reads as spectacles,
+              not as the graphic mask this design is after. */}
           <path
-            className={styles.mouth}
-            d={mouth.d}
-            data-filled={mouth.filled ? 'true' : 'false'}
+            className={styles.goggle}
+            d="M60 34 C76 34 90 37 95 43 C100 49 100 62 94 68 C89 73 80 74 74 69 C69 65 65 63 60 63 C55 63 51 65 46 69 C40 74 31 73 26 68 C20 62 20 49 25 43 C30 37 44 34 60 34 Z"
           />
+
+          <g clipPath={`url(#${wellId})`}>
+            <rect className={styles.sclera} x="24" y="34" width="72" height="38" />
+
+            <g className={styles.pupils}>
+              <ellipse className={styles.pupil} cx="45" cy="52" rx="8" ry="7" />
+              <ellipse className={styles.pupil} cx="75" cy="52" rx="8" ry="7" />
+            </g>
+
+            {/* Blinking moves this group; mood moves the lids inside it. Two
+                levels so the two never fight over `transform`. The lids
+                overlap at the centre so no seam shows between them. */}
+            <g className={styles.lids}>
+              <path
+                className={styles.lidLeft}
+                d="M16 4 H62 V40 C52 47 38 47 28 43 C24 41 19 41 16 42 Z"
+              />
+              <path
+                className={styles.lidRight}
+                d="M58 4 H104 V42 C101 41 96 41 92 43 C82 47 68 47 58 40 Z"
+              />
+            </g>
+          </g>
         </g>
       </g>
     </svg>
@@ -164,7 +137,6 @@ export function InkSplat({ className }: { className?: string }) {
       <circle cx="184" cy="30" r="9" />
       <circle cx="22" cy="150" r="7" />
       <circle cx="168" cy="152" r="5" />
-      <circle cx="8" cy="60" r="4.5" />
     </svg>
   )
 }

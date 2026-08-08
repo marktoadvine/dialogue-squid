@@ -10,9 +10,9 @@ import { usePrefersReducedMotion } from './usePrefersReducedMotion'
 import { useTypewriter } from './useTypewriter'
 import styles from './ClemDialogue.module.css'
 
-/** How often Clem leans out from behind the panel while a line sits read. */
-const PEEK_INTERVAL_MS = 7200
-const PEEK_HOLD_MS = 1900
+/** How often Clem leans over and scans the page while a line sits read. */
+const LOOK_INTERVAL_MS = 7200
+const LOOK_HOLD_MS = 1900
 
 export function ClemDialogue({
   messages,
@@ -40,7 +40,7 @@ export function ClemDialogue({
   const [queue, setQueue] = useState<ClemMessage[]>(baseQueue)
   const [index, setIndex] = useState(0)
   const [hasAppeared, setHasAppeared] = useState(false)
-  const [peeking, setPeeking] = useState(false)
+  const [looking, setLooking] = useState(false)
   const [interactions, setInteractions] = useState(0)
   const [nudgeCount, setNudgeCount] = useState(0)
 
@@ -131,20 +131,20 @@ export function ClemDialogue({
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [visible, dismiss])
 
-  // The peek loop.
+  // The look-around loop.
   useEffect(() => {
     if (!visible || reducedMotion) return
 
     let holdTimer = 0
     const interval = window.setInterval(() => {
-      setPeeking(true)
-      holdTimer = window.setTimeout(() => setPeeking(false), PEEK_HOLD_MS)
-    }, PEEK_INTERVAL_MS)
+      setLooking(true)
+      holdTimer = window.setTimeout(() => setLooking(false), LOOK_HOLD_MS)
+    }, LOOK_INTERVAL_MS)
 
     return () => {
       window.clearInterval(interval)
       window.clearTimeout(holdTimer)
-      setPeeking(false)
+      setLooking(false)
     }
   }, [visible, reducedMotion])
 
@@ -190,16 +190,16 @@ export function ClemDialogue({
       data-side={side}
     >
       <div className={styles.stage}>
-        {/* Two elements on purpose: the outer one clips Clem at the panel's
-            top edge so he reads as standing behind it, the inner one carries
-            the entrance animation so the clip line stays put while he pops. */}
+        {/* Clem perches on the panel's top edge with his tentacles dangling
+            over the front. The inner element carries the entrance animation
+            so the positioning stays independent of the pop. */}
         <div className={styles.mascot}>
           <div className={styles.mascotInner}>
             <InkSplat className={styles.splat} />
             <Clem
               mood={message.mood ?? 'idle'}
               talking={!typewriter.isComplete}
-              peeking={peeking}
+              looking={looking}
               stillness={reducedMotion}
             />
           </div>
@@ -208,12 +208,6 @@ export function ClemDialogue({
         {/* Clicking the slab advances, the way a game dialogue box does. The
             chevron below is the real control for keyboard and assistive tech. */}
         <div className={styles.panel} role="presentation" onClick={advance}>
-          <svg className={styles.speckles} viewBox="0 0 62 40" aria-hidden="true">
-            <circle cx="46" cy="12" r="7" />
-            <circle cx="26" cy="26" r="4" />
-            <circle cx="57" cy="30" r="3" />
-          </svg>
-
           <span className={styles.name}>{name}</span>
 
           <p className={styles.text} aria-hidden="true">

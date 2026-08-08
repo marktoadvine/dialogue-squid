@@ -1,7 +1,13 @@
 /*
- * Clem's animation rig. Every looping animation is switched off by either the
- * `.still` class (JS-detected reduced motion) or the media query at the bottom
- * (which holds before hydration).
+ * Clem's rig. Two rules govern the whole file:
+ *   1. Nothing on the character is stroked. Every shape is a fill, and every
+ *      body part is the same fill, so separation comes from gaps in the
+ *      geometry rather than outlines.
+ *   2. Expression is lids moving inside a clipped well. There is no mouth.
+ *
+ * Every looping animation is switched off by either `.still` (JS-detected
+ * reduced motion) or the media query at the bottom, which holds before
+ * hydration.
  */
 
 .clem {
@@ -9,83 +15,155 @@
   width: 100%;
   height: 100%;
   overflow: visible;
-  transform-origin: 50% 100%;
-  transition: transform 620ms cubic-bezier(0.34, 1.32, 0.5, 1);
+  transform-box: fill-box;
+  transform-origin: 50% 92%;
+  transition: transform 700ms cubic-bezier(0.34, 1.3, 0.5, 1);
 }
 
-/* The lean-out. Origin at the bottom so he pivots from behind the panel. */
-.peeking {
-  transform: translateX(14%) rotate(9deg);
+/* The idle "look around" — he leans rather than hides, now that he's perched
+   on top of the panel instead of standing behind it. */
+.looking {
+  transform: rotate(7deg);
 }
 
-/* ---------- shared paint ---------- */
+/* ---------- body ---------- */
 
-.body {
+.mantle,
+.nubs,
+.tentacle {
   fill: var(--clem-body, #ffd23f);
-  stroke: var(--clem-ink, #16121f);
-  stroke-width: 5;
-  stroke-linejoin: round;
-}
-
-.fin {
-  fill: var(--clem-body-shade, #f0a81e);
-  stroke: var(--clem-ink, #16121f);
-  stroke-width: 5;
-  stroke-linejoin: round;
 }
 
 .tentacle {
-  fill: var(--clem-body-shade, #f0a81e);
-  stroke: var(--clem-ink, #16121f);
-  stroke-width: 5;
-  stroke-linejoin: round;
+  transform-box: view-box;
+  animation: clemSway 2.9s ease-in-out infinite;
 }
 
-.gloss {
-  fill: #fff;
-  opacity: 0.34;
+.t1 {
+  transform-origin: 40px 88px;
+  animation-delay: -0.2s;
+}
+.t2 {
+  transform-origin: 59px 90px;
+  animation-delay: -1.1s;
+}
+.t3 {
+  transform-origin: 80px 88px;
+  animation-delay: -1.9s;
+}
+
+@keyframes clemSway {
+  0%,
+  100% {
+    transform: rotate(-4.5deg);
+  }
+  50% {
+    transform: rotate(4.5deg);
+  }
+}
+
+/* ---------- face ---------- */
+
+.goggle {
+  fill: var(--clem-ink, #16121f);
 }
 
 .sclera {
-  fill: #fffdf5;
-  stroke: var(--clem-ink, #16121f);
-  stroke-width: 4;
+  fill: #fffdf6;
 }
 
 .pupil {
   fill: var(--clem-ink, #16121f);
 }
 
-.glint {
-  fill: #fff;
+.pupils {
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
-.brow {
-  fill: none;
-  stroke: var(--clem-ink, #16121f);
-  stroke-width: 7.5;
-  stroke-linecap: round;
+/* Scanning the page while he leans. */
+.looking .pupils {
+  animation: clemScan 2s ease-in-out;
 }
 
-.mouth {
-  fill: none;
-  stroke: var(--clem-ink, #16121f);
-  stroke-width: 6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+@keyframes clemScan {
+  0% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(-3.5px);
+  }
+  65% {
+    transform: translateX(3.5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
-.mouth[data-filled='true'] {
+/* ---------- lids ---------- */
+
+.lids {
+  transform-box: fill-box;
+  transform-origin: center top;
+  animation: clemBlink 5.6s ease-in-out infinite;
+}
+
+/* A curved lid edge arriving with overshoot is what reads as gooey rather
+   than as a camera shutter. */
+@keyframes clemBlink {
+  0%,
+  90%,
+  100% {
+    transform: translateY(0);
+  }
+  94% {
+    transform: translateY(26px);
+  }
+  97% {
+    transform: translateY(-2px);
+  }
+}
+
+.lidLeft,
+.lidRight {
   fill: var(--clem-ink, #16121f);
-  stroke-width: 4;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transition: transform 320ms cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+
+/* Moods, in full. Each is just "where are the two lids". */
+.clem[data-mood='curious'] .lidLeft {
+  transform: translateY(-5px) rotate(5deg);
+}
+.clem[data-mood='curious'] .lidRight {
+  transform: translateY(1px);
+}
+
+.clem[data-mood='excited'] .lidLeft,
+.clem[data-mood='excited'] .lidRight {
+  transform: translateY(-5px);
+}
+
+.clem[data-mood='sly'] .lidLeft {
+  transform: translateY(7px) rotate(3deg);
+}
+.clem[data-mood='sly'] .lidRight {
+  transform: translateY(7px) rotate(-3deg);
+}
+
+.clem[data-mood='surprised'] .lidLeft,
+.clem[data-mood='surprised'] .lidRight {
+  transform: translateY(-8px);
 }
 
 /* ---------- idle bob ---------- */
 
 .bob {
-  animation: clemBob 3.2s ease-in-out infinite;
   transform-box: fill-box;
   transform-origin: 50% 100%;
+  animation: clemBob 3.4s ease-in-out infinite;
 }
 
 @keyframes clemBob {
@@ -94,136 +172,23 @@
     transform: translateY(0) rotate(0deg);
   }
   50% {
-    transform: translateY(-4px) rotate(-1.2deg);
+    transform: translateY(-3px) rotate(-1.4deg);
   }
-}
-
-/* Mantle squashes a beat behind the bob so he feels soft rather than rigid. */
-.mantle {
-  animation: clemSquash 3.2s ease-in-out infinite;
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-}
-
-@keyframes clemSquash {
-  0%,
-  100% {
-    transform: scale(1, 1);
-  }
-  45% {
-    transform: scale(0.985, 1.02);
-  }
-  70% {
-    transform: scale(1.015, 0.985);
-  }
-}
-
-/* ---------- tentacle sway ---------- */
-
-.tentacle {
-  transform-box: view-box;
-  animation: clemSway 2.6s ease-in-out infinite;
-}
-
-.t1 {
-  transform-origin: 43px 118px;
-  animation-delay: -0.1s;
-}
-.t2 {
-  transform-origin: 65px 124px;
-  animation-delay: -0.7s;
-}
-.t3 {
-  transform-origin: 95px 124px;
-  animation-delay: -1.3s;
-}
-.t4 {
-  transform-origin: 117px 118px;
-  animation-delay: -1.9s;
-}
-
-@keyframes clemSway {
-  0%,
-  100% {
-    transform: rotate(-4deg);
-  }
-  50% {
-    transform: rotate(4deg);
-  }
-}
-
-/* ---------- blinking ---------- */
-
-.eye {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: clemBlink 5.4s ease-in-out infinite;
-}
-
-/* Desyncing the second eye by a few ms keeps it from looking mechanical. */
-.eyeRight {
-  animation-duration: 5.55s;
-  animation-delay: -0.04s;
-}
-
-@keyframes clemBlink {
-  0%,
-  92%,
-  100% {
-    transform: scaleY(1);
-  }
-  95.5% {
-    transform: scaleY(0.06);
-  }
-}
-
-/* ---------- brows ---------- */
-
-.brows {
-  transform-box: fill-box;
-  transform-origin: center bottom;
-  transition: transform 260ms cubic-bezier(0.34, 1.4, 0.5, 1);
-}
-
-/* Brows fly up as he leans out — the "raised eyebrows" beat. */
-.peeking .brows {
-  transform: translateY(-5px);
-}
-
-.peeking .eye {
-  animation: none;
-  transform: scaleY(1.08);
 }
 
 /* ---------- talking ---------- */
 
-.talking .mouth {
-  animation: clemTalk 260ms steps(1, end) infinite;
-  transform-box: fill-box;
-  transform-origin: center;
+.talking .lids {
+  animation: clemChatter 460ms ease-in-out infinite;
 }
 
-@keyframes clemTalk {
-  0%,
-  100% {
-    transform: scaleY(1);
-  }
-  50% {
-    transform: scaleY(0.45) translateY(2px);
-  }
-}
-
-.talking .brows {
-  animation: clemBrowChatter 520ms ease-in-out infinite;
-}
-
-@keyframes clemBrowChatter {
+@keyframes clemChatter {
   0%,
   100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-1.5px);
+    transform: translateY(-2px);
   }
 }
 
@@ -242,7 +207,7 @@
     transition: none !important;
   }
 
-  .peeking {
+  .looking {
     transform: none;
   }
 }

@@ -1,10 +1,10 @@
 # dialogue-squid
 
-Meet **Clem** — a game-style dialogue popup for React. He rises from the bottom of the
-page a beat after load, peers over the top of his own dialogue box, raises his eyebrows,
-and tells your visitors where to click.
+Meet **Clem** — a game-style dialogue popup for React. He pops up at the bottom of the
+page a beat after load, perches on top of his own dialogue box, and tells your visitors
+where to click. He has no mouth; the eyebrows do all the talking.
 
-![Clem peering over his dialogue box](docs/preview.png)
+![Clem perched on his dialogue box](docs/preview.png)
 
 Zero runtime dependencies. One CSS Module, one hand-drawn SVG, and a handful of hooks.
 
@@ -17,8 +17,8 @@ npm install
 npm run dev
 ```
 
-That opens a demo playground — a stand-in mini-site with controls for Clem's side, type
-speed, appear delay, and the page backdrop behind him.
+That opens a deliberately empty page with nothing on it but Clem, plus a small toggle in
+the corner for flipping the backdrop between white and dark.
 
 To use him in your own app:
 
@@ -27,7 +27,7 @@ import { ClemDialogue } from './components/ClemDialogue'
 
 <ClemDialogue
   messages={[
-    'Looking for something? Try clicking About to learn more about Mark!',
+    'Looking for something? Try clicking “About” to learn more about Mark!',
     { text: 'Squid fact: I have three hearts!', mood: 'sly' },
   ]}
 />
@@ -67,12 +67,15 @@ rather than bold-vs-regular — worth knowing if you restyle it.
 | `name` | `string` | `'CLEM'` | The label above the message. |
 | `appearDelayMs` | `number` | `2500` | Wait before his first appearance. `0` disables. |
 | `typeSpeed` | `number` | `28` | Milliseconds per character. |
-| `side` | `'left' \| 'right'` | `'left'` | Which corner he occupies. |
+| `side` | `'left' \| 'right'` | `'left'` | Which corner of the *panel* Clem perches on. The panel itself is always centred. |
 | `autoAdvanceMs` | `number \| null` | `null` | Auto-advance this long after a line lands. |
 | `idleNudge` | `ClemIdleNudge \| null` | `null` | Have him pipe up after a quiet stretch. |
 | `className` | `string` | — | Applied to the outermost element. |
 
 ### Messages
+
+The panel is fixed to the bottom centre of the viewport. `side` moves Clem from one end of
+its top edge to the other — and takes the dismiss button with it, to the opposite corner.
 
 ```ts
 type ClemMood = 'idle' | 'curious' | 'excited' | 'sly' | 'surprised'
@@ -80,7 +83,7 @@ type ClemMood = 'idle' | 'curious' | 'excited' | 'sly' | 'surprised'
 interface ClemMessage {
   id?: string
   text: string
-  mood?: ClemMood                 // drives his brows and mouth
+  mood?: ClemMood                 // drives his eyelids — there is no mouth
   action?: {
     label: string
     onClick?: () => void
@@ -121,18 +124,18 @@ from your own stylesheet — no need to touch the module.
 
 | Variable | Default | |
 | --- | --- | --- |
-| `--clem-body` | `#ffd23f` | Mantle |
-| `--clem-body-shade` | `#f0a81e` | Fins and tentacles |
-| `--clem-ink` | `#16121f` | Outlines, brows, pupils |
+| `--clem-body` | `#ffd23f` | All of Clem. One flat colour, no shading |
+| `--clem-ink` | `#16121f` | Eye mask, pupils, lids |
 | `--clem-accent` | `#ffd23f` | Name, chevron, caret |
 | `--clem-text` | `#ffffff` | Message text |
-| `--clem-panel` | `rgb(10 10 12 / 0.9)` | The slab |
-| `--clem-panel-blur` | `3px` | Backdrop blur behind the slab |
+| `--clem-panel` | `rgb(10 10 12 / 0.9)` | The bubble |
+| `--clem-panel-blur` | `3px` | Backdrop blur behind the bubble |
 | `--clem-font` | `'Slackey', …` | Typeface for the whole component |
 | `--clem-z` | `9999` | Stacking order |
 | `--clem-offset` | `clamp(0.75rem, 3vw, 2rem)` | Distance from the viewport edges |
-| `--clem-size` | `182px` | Clem's height |
-| `--clem-overlap` | `70px` | How much of him hides behind the panel |
+| `--clem-size` | `88px` | Clem's height |
+| `--clem-perch` | `30px` | How far his tentacles dangle over the panel |
+| `--clem-headroom` | `2.35rem` | Top padding that gives the dangle somewhere to go |
 
 The `className` prop lands on the element that declares them, so that's the hook:
 
@@ -145,15 +148,13 @@ The `className` prop lands on the element that declares them, so that's the hook
    CSS Modules, so this is the stable way in. */
 .clem-mint {
   --clem-body: #8ef0c4;
-  --clem-body-shade: #4bc79a;
   --clem-accent: #8ef0c4;
   --clem-panel: rgb(18 8 30 / 0.92);
 }
 ```
 
-`--clem-overlap` is the one to be careful with: he's clipped at the panel's top edge, and
-the default is tuned so the cut lands just above his tentacles. Lower it much and they
-get sliced into a row of flat bars.
+`--clem-perch` and `--clem-headroom` move together. The headroom is the band of top
+padding his tentacles hang into; if you raise the perch past it, they land on the name.
 
 ---
 
@@ -184,9 +185,9 @@ add `'use client'` at the top of `ClemDialogue.tsx` or import him from a file th
   read it out one character at a time.
 - Every control is a real `<button>` with a label, and `Escape` dismisses.
 - `prefers-reduced-motion` is respected twice over — in the stylesheet, so it holds before
-  hydration, and in JS, which skips the typewriter and the peek loop.
+  hydration, and in JS, which skips the typewriter and the look-around loop.
 - Measured contrast over the worst case (the translucent panel on a white page):
-  **15.8:1** for the message text, **10.9:1** for the name. Both clear WCAG AAA.
+  **15.8:1** for the message text at 16px, **10.9:1** for the name. Both clear WCAG AAA.
 
 ---
 
@@ -194,7 +195,7 @@ add `'use client'` at the top of `ClemDialogue.tsx` or import him from a file th
 
 | | |
 | --- | --- |
-| `npm run dev` | Demo playground |
+| `npm run dev` | Blank page with Clem on it |
 | `npm run build` | Typecheck and production build |
 | `npm run typecheck` | `tsc -b` |
 | `npm run lint` | ESLint |
@@ -203,7 +204,15 @@ add `'use client'` at the top of `ClemDialogue.tsx` or import him from a file th
 
 ## A note on the design
 
-The layout takes its cue from game dialogue boxes generally — a bottom-anchored slab, a
+The layout takes its cue from game dialogue boxes generally — a bottom-anchored bubble, a
 named speaker, typewriter text. The specifics are original: no hazard-stripe tape, no
 square portrait frame, no dotted-line name tag, original palette, original character.
 Clem is his own squid.
+
+Two things about him are load-bearing rather than decorative. **Nothing on the character
+is stroked** — every shape is a flat fill in one colour, so separation comes from gaps in
+the geometry, which is why his tentacles and the nubs along his hem are spaced the way
+they are. And **the whole face is one graphic**: a black mask, a white well clipped inside
+it, two pupils, and a pair of lids that slide around within the well. Blinking moves the
+lid group; mood moves each lid individually, so the two never fight over `transform`. That
+split is what lets him raise one brow.
