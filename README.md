@@ -1,8 +1,8 @@
 # dialogue-squid
 
-Meet **Clem** — a game-style dialogue popup for React. He pops up at the bottom of the
-page a beat after load, perches on top of his own dialogue box, and tells your visitors
-where to click. He has no mouth; the eyebrows do all the talking.
+Meet **Clem**! A video game-style dialogue popup for React. Clem pops up at the bottom of the
+page 2.5seconds after load, perches on top of his own dialogue box, and tells your visitors
+where to click. I was inspired by my endless love of Nintendo games, and early 2000's era Microsoft Word helpers.
 
 ![Clem perched on his dialogue box](docs/preview.png)
 
