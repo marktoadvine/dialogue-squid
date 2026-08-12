@@ -21,7 +21,7 @@ export interface ClemProps {
  * a transition, and CSS performs before a presentation attribute, so engines that
  * support it morph smoothly and the rest snap to the right shape. In our case, Safari 26.5 is a culprit.
  *
- * The two copies must stay in sync. `npm run check:masks` checks it.
+ * The two copies must stay in sync.
  */
 const MASKS: Record<ClemMood, { goggle: string; well: string }> = {
   idle: {
