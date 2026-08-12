@@ -45,8 +45,6 @@
   animation: clemStageIn 620ms cubic-bezier(0.22, 1.35, 0.36, 1) both;
 }
 
-/* ---------- mascot ---------- */
-
 .mascot {
   position: absolute;
   bottom: calc(100% - var(--clem-perch));
@@ -83,8 +81,6 @@
   animation: clemSplat 720ms ease-out both;
 }
 
-/* ---------- panel ---------- */
-
 .panel {
   position: relative;
   z-index: 1;
@@ -102,8 +98,6 @@
   user-select: none;
 }
 
-/* ---------- name ---------- */
-
 .name {
   display: inline-block;
   margin: 0 0 0.45rem;
@@ -115,8 +109,6 @@
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
-
-/* ---------- message ---------- */
 
 .text {
   margin: 0;
@@ -166,8 +158,6 @@
   transform: translateY(1px);
   box-shadow: 0 2px 6px rgb(0 0 0 / 0.3);
 }
-
-/* ---------- controls ---------- */
 
 .dismiss {
   position: absolute;
@@ -242,8 +232,6 @@
   border: 0;
 }
 
-/* ---------- keyframes ---------- */
-
 @keyframes clemStageIn {
   0% {
     opacity: 0;
@@ -309,8 +297,6 @@
   }
 }
 
-/* ---------- responsive ---------- */
-
 @media (max-width: 30rem) {
   .root {
     --clem-size: 72px;
@@ -330,8 +316,6 @@
     right: 18px;
   }
 }
-
-/* ---------- reduced motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
   .stage,
