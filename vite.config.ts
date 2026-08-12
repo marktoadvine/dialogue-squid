@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   // Relative asset paths, so the build works from any subpath. GitHub Pages
   // serves this from /dialogue-squid/, and hardcoding that would break both
-  // local dev and any future rename of the repo.
+  // local dev and any future rename of the repo. This is an intentionsl exception.
   base: './',
   build: {
     outDir: 'dist-demo',
