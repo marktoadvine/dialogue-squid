@@ -19,7 +19,7 @@ export const CLEM_LINES: ClemMessage[] = [
   },
   {
     text: 'Whoa! You made it to the end. You want some ink?',
-    mood: 'happy',
+    mood: 'curious',
   },
 ]
 
