@@ -6,6 +6,8 @@ where to click. I was inspired by my endless love of Nintendo games, and early 2
 
 ![Clem perched on his dialogue box](docs/preview.png)
 
+[Live Demo](https://marktoadvine.github.io/dialogue-squid/)
+
 No runtime dependencies beyond React. 13 kB of JS (4 kB gzipped), one stylesheet, one
 hand-drawn SVG.
 
