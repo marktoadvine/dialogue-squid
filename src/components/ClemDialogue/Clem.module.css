@@ -26,8 +26,6 @@
   transform: rotate(7deg);
 }
 
-/* ---------- body ---------- */
-
 .mantle,
 .nubs,
 .tentacle {
@@ -63,8 +61,6 @@
     transform: rotate(1.6deg);
   }
 }
-
-/* ---------- the eye mask ---------- */
 
 /*
  * Both shapes morph together. Moving the *well* is what thickens or thins the
@@ -184,8 +180,6 @@
   }
 }
 
-/* ---------- blinking ---------- */
-
 /* The lid does nothing but blink — mood is carried by the mask shapes. */
 .lid {
   fill: var(--clem-ink, #16121f);
@@ -210,8 +204,6 @@
   }
 }
 
-/* ---------- idle bob ---------- */
-
 .bob {
   transform-box: fill-box;
   transform-origin: 50% 100%;
@@ -229,8 +221,6 @@
   }
 }
 
-/* ---------- talking ---------- */
-
 .talking .lid {
   animation: clemChatter 460ms ease-in-out infinite;
 }
@@ -244,8 +234,6 @@
     transform: translateY(-2px);
   }
 }
-
-/* ---------- reduced motion ---------- */
 
 .still,
 .still * {
